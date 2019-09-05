@@ -106,41 +106,41 @@ export function createEntry(name: string, href: string, options: boolean) {
   }
   const position = editor.selection.active;
   const cursorPosition = position.character;
-  const attributeSpace = "  ";
+  const attributeSpace = " ";
 
-  const tocEntryLineStart =
-    `- name: ${name}
+  if (cursorPosition === 0 && !options) {
+    const tocEntryLineStart =
+      `- name: ${name}
   href: ${href}`
+    insertContentToEditor(editor, insertTocEntry.name, tocEntryLineStart);
+  }
 
-  const tocEntryIndented =
-    `- name: ${name}
-  ${attributeSpace}href: ${href}`
+  if (cursorPosition > 0 && !options) {
+    const currentPosition = editor.selection.active.character;
+    let tocEntryIndented =
+      `- name: ${name}
+  ${attributeSpace.repeat(currentPosition)}href: ${href}`
+    insertContentToEditor(editor, insertTocEntry.name, tocEntryIndented);
+  }
 
-  const tocEntryWithOptions =
-    `- name: ${name}
+  if (cursorPosition === 0 && options) {
+    const tocEntryWithOptions =
+      `- name: ${name}
   displayname: #optional string for searching TOC
   href: ${href}
   uid: #optional string
   expanded: #true or false, false is default`;
-
-
-  const tocEntryWithOptionsIndented =
-    `- name: ${name}
-  ${attributeSpace}displayname: #optional string for searching TOC
-  ${attributeSpace}href: ${href}
-  ${attributeSpace}uid: #optional string
-  ${attributeSpace}expanded: #true or false, false is default`;
-
-  if (cursorPosition === 0 && !options) {
-    insertContentToEditor(editor, insertTocEntry.name, tocEntryLineStart);
-  }
-  if (cursorPosition > 0 && !options) {
-    insertContentToEditor(editor, insertTocEntry.name, tocEntryIndented);
-  }
-  if (cursorPosition === 0 && options) {
     insertContentToEditor(editor, insertTocEntryWithOptions.name, tocEntryWithOptions);
   }
+
   if (cursorPosition > 0 && options) {
+    const currentPosition = editor.selection.active.character;
+    const tocEntryWithOptionsIndented =
+      `- name: ${name}
+  ${attributeSpace.repeat(currentPosition)}displayname: #optional string for searching TOC
+  ${attributeSpace.repeat(currentPosition)}href: ${href}
+  ${attributeSpace.repeat(currentPosition)}uid: #optional string
+  ${attributeSpace.repeat(currentPosition)}expanded: #true or false, false is default`;
     insertContentToEditor(editor, insertTocEntryWithOptions.name, tocEntryWithOptionsIndented);
   }
   showStatusMessage(insertedTocEntry);
