@@ -228,23 +228,22 @@ export function createParentNode() {
   }
   const position = editor.selection.active;
   const cursorPosition = position.character;
-  const attributeSpace = "  ";
-  const indentedSpace = "    ";
+  const attributeSpace = " ";
 
-  const parentNodeLineStart = `- name:
+  if (cursorPosition === 0) {
+    const parentNodeLineStart = `- name:
   items:
   - name:
     href:`
-
-  const parentNodeIndented = `- name:
-  ${attributeSpace}items:
-  ${attributeSpace}- name:
-  ${indentedSpace}href:`
-
-  if (cursorPosition === 0) {
     insertContentToEditor(editor, insertTocEntry.name, parentNodeLineStart);
   }
   if (cursorPosition > 0) {
+    const currentPosition = editor.selection.active.character;
+    const parentNodeIndented =
+      `- name:
+  ${attributeSpace.repeat(currentPosition)}items:
+  ${attributeSpace.repeat(currentPosition)}- name:
+  ${attributeSpace.repeat(currentPosition + 2)}href:`
     insertContentToEditor(editor, insertTocEntry.name, parentNodeIndented);
   }
 }
