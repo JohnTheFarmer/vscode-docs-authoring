@@ -335,7 +335,6 @@ export async function applyLocScope() {
     return;
 }
 
-
 export function imageKeyWordHasBeenTyped(editor: any) {
     const RE_IMAGE = /image/g
     if (editor) {
@@ -347,9 +346,9 @@ export function imageKeyWordHasBeenTyped(editor: any) {
     }
 }
 export function imageCompletionProvider() {
-    const completionItems: CompletionItem[] = [];
-    completionItems.push(new CompletionItem(`:::image type="content" source="" alt-text="" loc-scope="":::`));
-    completionItems.push(new CompletionItem(`:::image type="icon" source="" alt-text="" loc-scope="":::`));
-    completionItems.push(new CompletionItem(`:::image type="complex" source="" alt-text="" loc-scope="":::`));
-    return completionItems;
+    const imageCompletionItems: CompletionItem[] = [];
+    imageCompletionItems.push(new CompletionItem(`:::image type="content" source="":::`));
+    imageCompletionItems.push(new CompletionItem(`:::image type="icon" source="":::`));
+    imageCompletionItems.push(new CompletionItem(`:::image type="complex" source="" alt-text="":::\n\n:::image-end:::`));
+    return imageCompletionItems;
 }

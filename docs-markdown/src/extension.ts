@@ -30,6 +30,7 @@ import { checkExtension, generateTimestamp, noActiveEditorMessage } from "./help
 import { Reporter } from "./helper/telemetry";
 import { UiHelper } from "./helper/ui";
 import { isCursorInsideYamlHeader } from "./helper/yaml-metadata";
+import { imageCompletionProvider } from "./controllers/image-controller";
 
 export const output = window.createOutputChannel("docs-markdown");
 export let extensionPath: string;
@@ -175,7 +176,7 @@ function setupAutoComplete() {
 
     let completionItemsMarkdown: CompletionItem[] = [];
     completionItemsMarkdown = completionItemsMarkdown.concat(
-        noLocCompletionItemsMarkdown());
+        noLocCompletionItemsMarkdown(), imageCompletionProvider());
 
     let completionItemsYaml: CompletionItem[] = [];
     completionItemsYaml = completionItemsYaml.concat(noLocCompletionItemsYaml());
