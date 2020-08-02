@@ -125,20 +125,13 @@ export class YamlContentProvider implements vscode.TextDocumentContentProvider {
 		let title = '';
 		let summary = '';
 		let landingContent = '';
-		let note = 'Missing: ';
 		if (yamlObj.title) {
 			title = yamlObj.title;
-		} else {
-			note += '"title" ';
 		}
 		if (yamlObj.summary) {
 			summary = yamlObj.summary;
-		} else {
-			note += '"summary"" ';
 		}
 		if (yamlObj.metadata) {
-		} else {
-			note += '"metadata" ';
 		}
 		if (yamlObj.landingContent) {
 			for (const card in yamlObj.landingContent) {
@@ -173,9 +166,7 @@ export class YamlContentProvider implements vscode.TextDocumentContentProvider {
 				landingContent += this.createCard(cardContent);
 			}
 		} else {
-			note += '"landingContent" ';
 		}
-		if (note.length > 9) postInformation(note);
 		body += this.createHeaderSection(title, summary);
 		body += this.createContentSection(landingContent);
 		return body;
