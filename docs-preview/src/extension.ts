@@ -2,7 +2,15 @@
 
 import { appendFileSync, readFileSync, writeFileSync } from 'fs';
 import { basename, join } from 'path';
-import { commands, ExtensionContext, ViewColumn, WebviewPanel, window, workspace } from 'vscode';
+import {
+	commands,
+	ExtensionContext,
+	ViewColumn,
+	WebviewPanel,
+	window,
+	workspace,
+	Uri
+} from 'vscode';
 import { isMarkdownFile, isYamlFile, sendTelemetryData } from './helper/common';
 import { Reporter } from './helper/telemetry';
 import { codeSnippets, tripleColonCodeSnippets } from './markdown-extensions/codesnippet';
@@ -16,7 +24,7 @@ import { videoOptions, legacyVideoOptions } from './markdown-extensions/video';
 import { DocumentContentProvider } from './seo/seoPreview';
 import { xref } from './markdown-extensions/xref';
 import { rootDirectory } from './markdown-extensions/rootDirectory';
-
+import { YamlContentProvider } from './yaml/yamlPreview';
 export const output = window.createOutputChannel('docs-preview');
 export let extensionPath: string;
 const telemetryCommand: string = 'preview';
@@ -44,25 +52,22 @@ export async function activate(context: ExtensionContext) {
 	});
 
 	const provider = new DocumentContentProvider();
-
-	context.subscriptions.push(
-		workspace.onDidChangeTextDocument(async event => {
-			if (isMarkdownFile(event.document) || isYamlFile(event.document)) {
-				if (panel) {
-					panel.webview.html = await provider.provideTextDocumentContent();
-				}
-			}
-		})
-	);
+	const yamlProvider = new YamlContentProvider();
 
 	const disposableSEOPreview = commands.registerCommand(
 		'docs.seoPreview',
 		seoPreview(ViewColumn.Two)
 	);
+
+	const disposableYamlPreview = commands.registerCommand(
+		'docs.yamlPreview',
+		yamlPreview(ViewColumn.Two)
+	);
 	context.subscriptions.push(
 		disposableSidePreview,
 		disposableStandalonePreview,
-		disposableSEOPreview
+		disposableSEOPreview,
+		disposableYamlPreview
 	);
 
 	let filePath = '';
@@ -104,6 +109,33 @@ export async function activate(context: ExtensionContext) {
 				{}
 			);
 			panel.webview.html = await provider.provideTextDocumentContent();
+		};
+	}
+	function yamlPreview(column): (...args: any[]) => any {
+		return async () => {
+			// Create and show a new webview
+			panel = window.createWebviewPanel(
+				'yamlPreview',
+				`Preview ${basename(window.activeTextEditor.document.fileName)}`,
+				{ preserveFocus: true, viewColumn: column },
+				{
+					localResourceRoots: [Uri.file(join(context.extensionPath, 'media'))]
+				}
+			);
+
+			const stylePath = Uri.file(join(context.extensionPath, 'media', 'yamlPreview.css'));
+			const styleSrc = panel.webview.asWebviewUri(stylePath);
+
+			async function setHtml() {
+				const html = await yamlProvider.provideTextDocumentContent(styleSrc);
+				panel.webview.html = html;
+			}
+			setHtml();
+			workspace.onDidChangeTextDocument(async () => {
+				setHtml();
+			});
+
+			panel.onDidDispose(() => {}, null, context.subscriptions);
 		};
 	}
 }
