@@ -15,7 +15,7 @@ import { insertBulletedList, insertNumberedList } from './list-controller';
 import { insertLink, insertVideo } from './media-controller';
 import { insertMoniker } from './moniker-controller';
 import { noLocText } from './no-loc-controller';
-import { previewTopic, seoPreview } from './preview-controller';
+import { previewTopic, seoPreview, yamlPreview } from './preview-controller';
 import { insertRowsAndColumns } from './row-columns-controller';
 import { insertSnippet } from './snippet/snippet-controller';
 import { insertTable } from './table-controller';
@@ -161,6 +161,10 @@ export function markdownQuickPick(context: ExtensionContext) {
 		{
 			description: '',
 			label: '$(lock) Non-localizable text'
+		},
+		{
+			description: '',
+			label: '$(browser) Yaml preview'
 		}
 	);
 
@@ -237,6 +241,9 @@ export function markdownQuickPick(context: ExtensionContext) {
 				break;
 			case 'search results preview':
 				seoPreview();
+				break;
+			case 'yaml preview':
+				yamlPreview();
 				break;
 			case 'template':
 				applyTemplate();
